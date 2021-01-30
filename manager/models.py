@@ -1,4 +1,3 @@
-from datetime import timedelta
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -43,6 +42,15 @@ class CreateEvent(models.Model):
             self.date_finish = self.date_start.replace(hour=23, minute=59, second=59)
         super().save(**kwargs)
 
+
+class Holidays(models.Model):
+    title = models.CharField(max_length=200, verbose_name="Праздник")
+    holiday_start = models.DateTimeField(verbose_name="Начала праздника")
+    holiday_finish = models.DateTimeField(verbose_name="Окончание праздника")
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
 
 
 

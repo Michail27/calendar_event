@@ -1,4 +1,3 @@
-
 from rest_framework.serializers import ModelSerializer
 from manager.models import ProfileUser, CreateEvent
 
@@ -11,6 +10,7 @@ class UserSerialisers(ModelSerializer):
 
 class RegisterSerializers(ModelSerializer):
     class Meta:
+        email = {'required': True}
         model = ProfileUser
         fields = ('id', 'username', 'email', 'password', 'country')
         extra_kwargs = {'password': {'write_only': True}, }
@@ -23,12 +23,14 @@ class RegisterSerializers(ModelSerializer):
         return user
 
 
+class LoginSerializers(ModelSerializer):
+    class Meta:
+        model = ProfileUser
+        email = {'required': True}
+        fields = ['username', 'email', 'password']
+
+
 class EventSerializers(ModelSerializer):
     class Meta:
         model = CreateEvent
-        fields = (
-            "title",
-            "date_start",
-            "date_finish",
-            "reminder",
-        )
+        fields = ("title", "date_start", "date_finish", "reminder")
