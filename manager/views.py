@@ -1,16 +1,19 @@
+from datetime import date
+
 from django.contrib import auth
-from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView, CreateAPIView, ListAPIView
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView
+
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from manager.models import ProfileUser
-from manager.serializers import RegisterSerializers, EventSerializers, LoginSerializers
+from manager.models import ProfileUser, Holidays, CreateEvent
+from manager.serializers import RegisterSerializers, EventSerializers, LoginSerializers, HolidausSerializers, \
+    ListEventSerializers
 
 
 class Register(GenericAPIView):
@@ -38,18 +41,45 @@ class Login(GenericAPIView):
                 token, flag = Token.objects.get_or_create(user=user)
                 send_mail("It's your token for calendar_event", f"token: {token.__str__()}",
                           "michail27.03@gmail.com", [request.data["email"]], fail_silently=True)
-                return Response("Your token to your e-mail")
+                return Response("Your token to your e-mail", status=status.HTTP_200_OK)
             return Response('the mail is not correct')
         return Response("this Userprofile not exist")
 
 
-class CreateEventSerializater(CreateAPIView):
-    serializer_class = EventSerializers
+class CreateEventSerializater(ListCreateAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    serializer_class = EventSerializers
+    queryset = CreateEvent.objects.all()
 
-    def create(self, request):
-        event = EventSerializers(data=request.data)
-        if event.is_valid():
-            event.save(user_event=request.user)
-        return Response({}, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):
+        serializer.save(user_event=self.request.user)
+
+
+class UserHolidays(ListAPIView):
+    filter_backends = [SearchFilter]
+    serializer_class = HolidausSerializers
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    search_fields = ['holiday_start']
+
+    def get_queryset(self):
+        holidays = Holidays.objects.filter(country=self.request.user.country_id)
+        return holidays
+
+
+class UserEvent(ListAPIView):
+    filter_backends = [SearchFilter]
+    serializer_class = ListEventSerializers
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+    search_fields = ['date_start']
+
+    def get_queryset(self,):
+        events = CreateEvent.objects.filter(user_event=self.request.user.id)
+        # holidays_month = events.filter(date_start__month=date.today().month,
+        #                                date_start__year=date.today().year,
+        #                                date_start__day=date.today().day)
+
+        return events
+

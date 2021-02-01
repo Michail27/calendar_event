@@ -5,6 +5,7 @@ from manager.models import Country, Holidays
 
 from tqdm import tqdm
 
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         for country in tqdm(Country.objects.all()):
@@ -17,7 +18,7 @@ class Command(BaseCommand):
                 try:
                     Holidays.objects.create(title=holiday.name,
                                             holiday_start=holiday.begin.format("YYYY-MM-DD HH:mm:ss"),
-                                            holiday_finish=holiday.begin.format("YYYY-MM-DD HH:mm:ss"),
+                                            holiday_finish=holiday.end.format("YYYY-MM-DD HH:mm:ss"),
                                             country=country)
                 except Exception as se:
                     print(se)

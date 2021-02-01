@@ -1,3 +1,4 @@
+from datetime import timedelta
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -25,20 +26,31 @@ class ReminderTime(models.Model):
         return self.reminder
 
 
+CHOICE_TIME = [
+    (timedelta(hours=1), "За час",),
+    (timedelta(hours=2), "За 2 часа"),
+    (timedelta(hours=4), "За 4 часа"),
+    (timedelta(days=1), "За день"),
+    (timedelta(weeks=1), "За неделю"),
+    ]
+
+
 class CreateEvent(models.Model):
+    chouse_time = CHOICE_TIME
     user_event = models.ForeignKey(ProfileUser, on_delete=models.CASCADE, related_name="user",
                                    verbose_name="кто создал событие")
     title = models.CharField(max_length=100, verbose_name="название события")
     date_start = models.DateTimeField(verbose_name="Время начало события")
     date_finish = models.DateTimeField(blank=True, null=True, verbose_name="Время окончание события")
-    reminder = models.ForeignKey(ReminderTime, verbose_name="Когда напомнить", on_delete=models.CASCADE,
-                                 null=True, blank=True, related_name='reminder_user')
+    reminder = models.DurationField(verbose_name="Когда напомнить", choices=chouse_time,
+                                    null=True, blank=True)
+    notification = models.BooleanField(verbose_name="Оповещение", default=False)
 
     def __str__(self):
         return self.title
 
     def save(self, **kwargs):
-        if self.date_stop is None:
+        if self.date_finish is None:
             self.date_finish = self.date_start.replace(hour=23, minute=59, second=59)
         super().save(**kwargs)
 
@@ -51,6 +63,8 @@ class Holidays(models.Model):
 
     def __str__(self):
         return self.title
+
+
 
 
 
