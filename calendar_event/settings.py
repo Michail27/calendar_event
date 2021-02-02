@@ -124,9 +124,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = 'michail27.03.1988'
 
-# REST_FRAMEWORK = {
-#     'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
-# }
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

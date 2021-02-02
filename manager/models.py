@@ -25,9 +25,6 @@ class ReminderTime(models.Model):
         return self.reminder
 
 
-
-
-
 class CreateEvent(models.Model):
     chouse_time = CHOICE_TIME
     user_event = models.ForeignKey(ProfileUser, on_delete=models.CASCADE, related_name="user",
