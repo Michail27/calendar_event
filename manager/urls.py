@@ -6,5 +6,5 @@ urlpatterns = [
     path('login/', Login.as_view(), name='register'),
     path("createevent/", CreateEventSerializater.as_view(), name='create-event'),
     path('listholidays/', UserHolidays.as_view(), name='list-holidays'),
-    path('listevent/', UserEvent.as_view(), name='list-event'),
+    path('listevent/<str:data>/', UserEvent.as_view(), name='list-event'),
 ]

@@ -1,7 +1,6 @@
-from datetime import timedelta
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from calendar_event.settings import CHOICE_TIME
 
 
 class Country(models.Model):
@@ -26,13 +25,7 @@ class ReminderTime(models.Model):
         return self.reminder
 
 
-CHOICE_TIME = [
-    (timedelta(hours=1), "За час",),
-    (timedelta(hours=2), "За 2 часа"),
-    (timedelta(hours=4), "За 4 часа"),
-    (timedelta(days=1), "За день"),
-    (timedelta(weeks=1), "За неделю"),
-    ]
+
 
 
 class CreateEvent(models.Model):
@@ -63,11 +56,3 @@ class Holidays(models.Model):
 
     def __str__(self):
         return self.title
-
-
-
-
-
-
-
-

@@ -68,4 +68,4 @@ class HolidausSerializers(ModelSerializer):
 class ListEventSerializers(ModelSerializer):
     class Meta:
         model = CreateEvent
-        fields = ("title", "date_start")
+        fields = ['title', "date_start"]

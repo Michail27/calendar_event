@@ -1,19 +1,17 @@
-from datetime import date
-
 from django.contrib import auth
 from django.core.mail import send_mail
-
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView
-
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.views import APIView
+
 from manager.models import ProfileUser, Holidays, CreateEvent
-from manager.serializers import RegisterSerializers, EventSerializers, LoginSerializers, HolidausSerializers, \
-    ListEventSerializers
+from manager.serializers import RegisterSerializers, EventSerializers, LoginSerializers, HolidausSerializers
+from manager.serializers import ListEventSerializers
 
 
 class Register(GenericAPIView):
@@ -47,7 +45,7 @@ class Login(GenericAPIView):
 
 
 class CreateEventSerializater(ListCreateAPIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = EventSerializers
     queryset = CreateEvent.objects.all()
@@ -59,7 +57,7 @@ class CreateEventSerializater(ListCreateAPIView):
 class UserHolidays(ListAPIView):
     filter_backends = [SearchFilter]
     serializer_class = HolidausSerializers
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
     search_fields = ['holiday_start']
 
@@ -68,18 +66,21 @@ class UserHolidays(ListAPIView):
         return holidays
 
 
-class UserEvent(ListAPIView):
-    filter_backends = [SearchFilter]
-    serializer_class = ListEventSerializers
+class UserEvent(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
-    search_fields = ['date_start']
 
-    def get_queryset(self,):
-        events = CreateEvent.objects.filter(user_event=self.request.user.id)
-        # holidays_month = events.filter(date_start__month=date.today().month,
-        #                                date_start__year=date.today().year,
-        #                                date_start__day=date.today().day)
-
-        return events
+    def get(self, request, data):
+        data = data.split("-")
+        event = CreateEvent.objects.filter(user_event=request.user)
+        if len(data) == 1:
+            event = event.filter(date_start__year=data[0])
+        elif len(data) == 2:
+            event = event.filter(date_start__year=data[0], date_start__month=data[1])
+        elif len(data) == 3:
+            event = event.filter(date_start__year=data[0],
+                                 date_start__month=data[1],
+                                 date_start__day=data[2])
+        serializer = ListEventSerializers(event.order_by("date_start"), many=True)
+        return Response(serializer.data)
 

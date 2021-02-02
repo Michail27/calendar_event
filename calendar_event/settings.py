@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -108,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Minsk'
 
 USE_I18N = True
 
@@ -129,6 +130,14 @@ EMAIL_HOST_PASSWORD = 'michail27.03.1988'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+CHOICE_TIME = [
+    (timedelta(hours=1), "За час",),
+    (timedelta(hours=2), "За 2 часа"),
+    (timedelta(hours=4), "За 4 часа"),
+    (timedelta(days=1), "За день"),
+    (timedelta(weeks=1), "За неделю"),
+    ]
 
 STATIC_URL = '/static/'
 
