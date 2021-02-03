@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.filters import SearchFilter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView, ListAPIView, ListCreateAPIView
@@ -45,7 +46,7 @@ class Login(GenericAPIView):
 
 
 class CreateEventSerializater(ListCreateAPIView):
-    authentication_classes = [SessionAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = EventSerializers
     queryset = CreateEvent.objects.all()
@@ -54,11 +55,16 @@ class CreateEventSerializater(ListCreateAPIView):
         serializer.save(user_event=self.request.user)
 
 
+class MyPaginator(PageNumberPagination):
+    page_size = 5
+
+
 class UserHolidays(ListAPIView):
     filter_backends = [SearchFilter]
     serializer_class = HolidausSerializers
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
+    pagination_class = MyPaginator
     search_fields = ['holiday_start']
 
     def get_queryset(self):
@@ -67,7 +73,7 @@ class UserHolidays(ListAPIView):
 
 
 class UserEvent(APIView):
-    authentication_classes = [SessionAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, data):
@@ -84,3 +90,16 @@ class UserEvent(APIView):
         serializer = ListEventSerializers(event.order_by("date_start"), many=True)
         return Response(serializer.data)
 
+# class UserEvent(ListAPIView):
+#     authentication_classes = [SessionAuthentication]
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = ListEventSerializers
+#     queryset = CreateEvent.objects.all()
+#
+#     def get_queryset(self):
+#         events = CreateEvent.objects.filter(user_event=self.request.user)
+#         days = events.order_by('date_start__date').values('date_start__date').distinct()
+#         for day in days:
+#             de = CreateEvent.objects.filter(date_start__date=day['date_start__date'])
+#             day['title'] = de
+#         return days
