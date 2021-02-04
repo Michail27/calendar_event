@@ -5,10 +5,10 @@ from datetime import datetime, timedelta
 from ics import Calendar
 from requests import get
 from tqdm import tqdm
-from celery import shared_task
+# from celery import shared_task
 
 
-@ shared_task
+# @ shared_task
 def check_send_email():
     now_time = pytz.UTC.localize(datetime.now())
     events = CreateEvent.objects.all()
@@ -30,7 +30,7 @@ def check_send_email():
     return 'Done'
 
 
-@ shared_task
+# @ shared_task
 def list_of_holidays():
     Holidays.objects.all().delete()
     for country in tqdm(Country.objects.all()):
