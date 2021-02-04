@@ -55,16 +55,13 @@ class CreateEventSerializater(ListCreateAPIView):
         serializer.save(user_event=self.request.user)
 
 
-class MyPaginator(PageNumberPagination):
-    page_size = 5
-
 
 class UserHolidays(ListAPIView):
     filter_backends = [SearchFilter]
     serializer_class = HolidausSerializers
-    authentication_classes = [SessionAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    pagination_class = MyPaginator
+
     search_fields = ['holiday_start']
 
     def get_queryset(self):

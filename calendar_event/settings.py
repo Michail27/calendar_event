@@ -77,22 +77,22 @@ WSGI_APPLICATION = 'calendar_event.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         "USER": os.environ.get("POSTGRES_USER"),
-#         'NAME': os.environ.get("POSTGRES_DB"),
-#         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-#         "HOST": os.environ.get("POSTGRES_HOST"),
-#         "PORT": os.environ.get("POSTGRES_PORT"),
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        "USER": os.environ.get("POSTGRES_USER"),
+        'NAME': os.environ.get("POSTGRES_DB"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": os.environ.get("POSTGRES_HOST"),
+        "PORT": os.environ.get("POSTGRES_PORT"),
+    }
+}
 
 
 # Password validation
@@ -119,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Europe/Minsk'
+TIME_ZONE = 'UTC-3'
 
 USE_I18N = True
 
@@ -142,9 +142,26 @@ CHOICE_TIME = [
     (timedelta(hours=1), "За час",),
     (timedelta(hours=2), "За 2 часа"),
     (timedelta(hours=4), "За 4 часа"),
-    (timedelta(days=1), "За день"),
-    (timedelta(weeks=1), "За неделю"),
+    (timedelta(hours=24), "За день"),
+    (timedelta(hours=168), "За неделю"),
     ]
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_BROKER_URL = 'redis://cache:6379'
+CELERY_RESULT_BACKEND = 'redis://cache:6379'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+
+CELERY_BEAT_SCHEDULE = {
+    "task_one": {
+        "task": "manager.tasks.check_send_email",
+        "schedule": 60 * 5,
+    },
+}
+
 
 STATIC_URL = '/static/'
 

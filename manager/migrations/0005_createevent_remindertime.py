@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
                 ('reminder', models.CharField(max_length=200)),
             ],
         ),
+
         migrations.CreateModel(
             name='CreateEvent',
             fields=[

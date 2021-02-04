@@ -24,16 +24,16 @@ class ReminderTime(models.Model):
     def __str__(self):
         return self.reminder
 
-
 class CreateEvent(models.Model):
     chouse_time = CHOICE_TIME
     user_event = models.ForeignKey(ProfileUser, on_delete=models.CASCADE, related_name="user",
                                    verbose_name="кто создал событие")
     title = models.CharField(max_length=100, verbose_name="название события")
+
     date_start = models.DateTimeField(verbose_name="Время начало события")
     date_finish = models.DateTimeField(blank=True, null=True, verbose_name="Время окончание события")
-    reminder = models.DurationField(verbose_name="Когда напомнить", choices=chouse_time,
-                                    null=True, blank=True)
+    reminder = models.CharField(max_length=50, verbose_name="Когда напомнить", choices=chouse_time,
+                                null=True, blank=True)
     notification = models.BooleanField(verbose_name="Оповещение", default=False)
 
     def __str__(self):
