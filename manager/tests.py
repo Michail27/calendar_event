@@ -93,6 +93,3 @@ class RestTest(TestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             response = clint.get('http://127.0.0.1:8000/event/listevent/2021-02-01', headers=headers)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-

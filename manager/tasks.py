@@ -5,10 +5,10 @@ from datetime import datetime, timedelta
 from ics import Calendar
 from requests import get
 from tqdm import tqdm
-# from celery import shared_task
+from celery import shared_task
 
 
-# @ shared_task
+@ shared_task
 def check_send_email():
     now_time = pytz.UTC.localize(datetime.now())
     events = CreateEvent.objects.all()
@@ -20,7 +20,7 @@ def check_send_email():
             else:
                 list_dey = list_time[0].split(' ')
                 time_delta = timedelta(days=int(list_dey[0]))
-            if event.date_start - time_delta < now_time:
+            if event.date_start - time_delta < now_time + timedelta(hours=3):
                 email = event.user_event.email
                 send_mail("It's your Planned event",
                           f"Event:{event.title}, Time:{event.date_start}",
@@ -30,7 +30,7 @@ def check_send_email():
     return 'Done'
 
 
-# @ shared_task
+@ shared_task
 def list_of_holidays():
     Holidays.objects.all().delete()
     for country in tqdm(Country.objects.all()):

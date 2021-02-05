@@ -55,7 +55,6 @@ class CreateEventSerializater(ListCreateAPIView):
         serializer.save(user_event=self.request.user)
 
 
-
 class UserHolidays(ListAPIView):
     filter_backends = [SearchFilter]
     serializer_class = HolidausSerializers
@@ -86,17 +85,3 @@ class UserEvent(APIView):
                                  date_start__day=data[2])
         serializer = ListEventSerializers(event.order_by("date_start"), many=True)
         return Response(serializer.data)
-
-# class UserEvent(ListAPIView):
-#     authentication_classes = [SessionAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = ListEventSerializers
-#     queryset = CreateEvent.objects.all()
-#
-#     def get_queryset(self):
-#         events = CreateEvent.objects.filter(user_event=self.request.user)
-#         days = events.order_by('date_start__date').values('date_start__date').distinct()
-#         for day in days:
-#             de = CreateEvent.objects.filter(date_start__date=day['date_start__date'])
-#             day['title'] = de
-#         return days

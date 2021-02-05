@@ -160,6 +160,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "manager.tasks.check_send_email",
         "schedule": 60 * 5,
     },
+    "task_two": {
+        "task": "manager.tasks.list_of_holidays",
+        "schedule": 60 * 60 * 720,
+    },
 }
 
 
