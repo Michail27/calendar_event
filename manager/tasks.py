@@ -24,7 +24,7 @@ def check_send_email():
                 email = event.user_event.email
                 send_mail("It's your Planned event",
                           f"Event:{event.title}, Time:{event.date_start}",
-                          "michail27.03@gmail.com", [email])
+                          "ilya27.03.19888@gmail.com", [email])
                 event.notification = False
                 event.save()
     return 'Done'

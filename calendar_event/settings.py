@@ -26,7 +26,7 @@ SECRET_KEY = 'wu8&tq(7j*4m#2a-gazl3**5&2od4+2kq-g==ftzrd836qrkbi'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['35.223.16.114', '127.0.0.1']
 
 
 # Application definition
@@ -77,22 +77,22 @@ WSGI_APPLICATION = 'calendar_event.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         "USER": os.environ.get("POSTGRES_USER"),
-#         'NAME': os.environ.get("POSTGRES_DB"),
-#         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-#         "HOST": os.environ.get("POSTGRES_HOST"),
-#         "PORT": os.environ.get("POSTGRES_PORT"),
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        "USER": 'django_user',
+        'NAME': 'django_db',
+        "PASSWORD": 'django_password',
+        "HOST": '127.0.0.1',
+        "PORT": 5432,
+    }
+}
 
 
 # Password validation
@@ -128,13 +128,18 @@ USE_L10N = True
 USE_TZ = True
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_USER = 'ilya27.03.19888@gmail.com'
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_PASSWORD = 'xQT-xdG-75S-3mL'
 
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://cache://127.0.0.1:6379/1'
+    }
+}
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -153,20 +158,22 @@ CELERY_BROKER_URL = 'redis://cache:6379'
 CELERY_RESULT_BACKEND = 'redis://cache:6379'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 
 CELERY_BEAT_SCHEDULE = {
     "task_one": {
         "task": "manager.tasks.check_send_email",
-        "schedule": 60 * 5,
+        "schedule": 300,
     },
     "task_two": {
         "task": "manager.tasks.list_of_holidays",
-        "schedule": 60 * 60 * 720,
+        "schedule": 2592000.0,
     },
 }
 
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 
 AUTH_USER_MODEL = 'manager.ProfileUser'
